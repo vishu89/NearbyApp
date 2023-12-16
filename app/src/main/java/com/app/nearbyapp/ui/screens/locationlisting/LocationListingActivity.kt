@@ -6,6 +6,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.SeekBar
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,13 +15,15 @@ import com.app.nearbyapp.base.BaseInteraction
 import com.app.nearbyapp.base.views.ViewBindingActivity
 import com.app.nearbyapp.databinding.ActivityLocationListingBinding
 import com.app.nearbyapp.location.LocationUtils
+import com.app.nearbyapp.location.LocationUtils.PERMISSION_REQUEST_CODE
 import com.app.nearbyapp.models.Location
 
 
 /*
 Local caching couldn't be implemented due to time constraints
  */
-class LocationListingActivity : ViewBindingActivity<ActivityLocationListingBinding>() {
+class LocationListingActivity : ViewBindingActivity<ActivityLocationListingBinding>(),
+    ActivityCompat.OnRequestPermissionsResultCallback {
 
     // move interactions to new class
     private val itemAdapter by lazy {
@@ -42,6 +45,24 @@ class LocationListingActivity : ViewBindingActivity<ActivityLocationListingBindi
                 }
             }
         })[LocationListingVM::class.java]
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            LocationUtils.fetchLocation(this) { latitude, longitude ->
+                viewModel.fetchNearbyLocations(
+                    Location(
+                        latitude,
+                        longitude
+                    )
+                )
+            }
+        }
     }
 
     override fun setupViews() {
@@ -66,7 +87,9 @@ class LocationListingActivity : ViewBindingActivity<ActivityLocationListingBindi
         })
 
         binding.rvView.setOnScrollChangeListener { p0, p1, p2, p3, p4 ->
-            if (p2 > 0 && (binding.rvView.adapter?.itemCount ?: Int.MAX_VALUE) - getVisibleItemCount() <= 3) {
+            if (p2 > 0 && (binding.rvView.adapter?.itemCount
+                    ?: Int.MAX_VALUE) - getVisibleItemCount() <= 3
+            ) {
                 // Make pagination call here
             }
         }

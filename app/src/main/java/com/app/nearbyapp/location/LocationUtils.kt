@@ -12,7 +12,7 @@ import com.google.android.gms.location.LocationServices
 
 object LocationUtils {
 
-    private const val PERMISSION_REQUEST_CODE = 101
+    const val PERMISSION_REQUEST_CODE = 101
     var currentLocation: Location? = null
         private set
 
