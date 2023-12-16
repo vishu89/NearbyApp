@@ -1,4 +1,4 @@
-package com.app.nearbyapp.network.apiservice
+package com.app.nearbyapp.network.apiservices
 
 import com.app.nearbyapp.ui.organisms.nearbylocation.NearbyLocationData
 import retrofit2.http.GET
