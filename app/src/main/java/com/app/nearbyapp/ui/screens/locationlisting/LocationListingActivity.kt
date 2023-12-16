@@ -80,7 +80,6 @@ class LocationListingActivity : ViewBindingActivity<ActivityLocationListingBindi
     }
 
     private fun fetchLocation() {
-        viewModel.showLoaderLd.value = true
         LocationUtils.fetchLocation(this) { latitude, longitude ->
             viewModel.fetchNearbyLocations(
                 Location(
@@ -95,12 +94,12 @@ class LocationListingActivity : ViewBindingActivity<ActivityLocationListingBindi
         viewModel.organismsLd.observe(this) {
             it ?: return@observe
             itemAdapter.setItems(it)
+            binding.mySeekbar.visibility = View.VISIBLE
         }
 
         viewModel.showLoaderLd.observe(this) {
             it ?: return@observe
             binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
-            binding.mySeekbar.visibility = if (it) View.GONE else View.VISIBLE
         }
     }
 

@@ -15,11 +15,14 @@ class LocationListingVM(private val repo: LocationListingRepo) : BaseViewModel()
         get() = _organismsLdLd
     private val _organismsLdLd = MutableLiveData<List<BaseOrganismData>>()
 
-    val showLoaderLd = MutableLiveData<Boolean>()
+    val showLoaderLd: LiveData<Boolean>
+        get() = _showLoaderLd
+    private val _showLoaderLd = MutableLiveData<Boolean>()
 
 
     fun fetchNearbyLocations(location: Location, range: Int = 12, page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO + defaultExceptionHandler) {
+            _showLoaderLd.postValue(true)
             repo.fetchNearbyLocations(
                 10,
                 location.latitude,
@@ -29,7 +32,7 @@ class LocationListingVM(private val repo: LocationListingRepo) : BaseViewModel()
             ).venues?.let {
                 _organismsLdLd.postValue(it)
             }
-            showLoaderLd.postValue(false)
+            _showLoaderLd.postValue(false)
         }
     }
 }
